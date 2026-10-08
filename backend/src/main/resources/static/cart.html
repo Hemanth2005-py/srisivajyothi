@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Shopping Cart — MYMART</title>
+  <meta name="description" content="View items in your cart, calculate discounts, delivery fee, taxes and proceed to checkout.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Navigation Bar Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2 small text-muted">
+        <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cart</li>
+      </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3 fw-bold mb-0"><i class="bi bi-cart3 text-success me-2"></i>My Shopping Cart</h1>
+      <button class="btn btn-outline-danger btn-sm" id="btn-clear-cart" onclick="CartView.clearCart()" style="display:none;">
+        <i class="bi bi-trash3 me-1"></i> Empty Cart
+      </button>
+    </div>
+
+    <!-- Free Delivery Threshold Notice -->
+    <div class="card border-0 mb-4 rounded-4 shadow-sm" id="delivery-progress-card" style="background: var(--bg-surface); border: 1px solid var(--border-color) !important; display:none;">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small fw-bold" id="delivery-msg">Add ₹0 more for FREE Delivery! 🚚</span>
+          <span class="badge bg-success-subtle text-success small" id="delivery-status-badge">Eligible</span>
+        </div>
+        <div class="progress" style="height: 8px;">
+          <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="delivery-progress-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Layout -->
+    <div class="row g-4" id="cart-content-layout">
+      <!-- Items Column -->
+      <div class="col-lg-8">
+        <div class="card border-0 rounded-4 shadow-sm overflow-hidden" style="background: var(--bg-surface); border: 1px solid var(--border-color) !important;">
+          <div class="card-body p-0">
+            <div id="cart-items-list" class="divide-y">
+              <!-- Rendered dynamically -->
+              <div class="p-4"><div class="skeleton" style="height: 100px;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <a href="products.html" class="btn btn-outline-custom">
+            <i class="bi bi-arrow-left me-1"></i> Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Bill Details & Checkout Column -->
+      <div class="col-lg-4">
+        <div class="card border-0 rounded-4 shadow-sm sticky-top" style="top: 85px; background: var(--bg-surface); border: 1px solid var(--border-color) !important;">
+          <div class="card-header bg-transparent border-bottom p-3">
+            <h5 class="fw-bold mb-0">Bill Details</h5>
+          </div>
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Items Original Total:</span>
+              <span id="bill-original-total">₹0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-success fw-bold">
+              <span>Total Product Savings:</span>
+              <span id="bill-discount-total">- ₹0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Merchandise Subtotal:</span>
+              <span id="bill-subtotal" class="fw-bold text-dark">₹0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Delivery Charge:</span>
+              <span id="bill-delivery-charge">₹0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3 small text-muted">
+              <span>Taxes (5% GST):</span>
+              <span id="bill-tax">₹0.00</span>
+            </div>
+
+            <hr style="border-color: var(--border-color);">
+
+            <div class="d-flex justify-content-between align-items-baseline mb-4">
+              <span class="fw-bold fs-5">Final Payable Total:</span>
+              <span class="fw-bold fs-4 text-success" id="bill-final-total">₹0.00</span>
+            </div>
+
+            <button class="btn btn-primary-custom w-100 justify-content-center py-2 fs-6 shadow-sm" id="btn-proceed-checkout" onclick="CartView.proceedToCheckout()">
+              Proceed to Checkout <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div id="cart-empty-state" class="text-center py-5 d-none">
+      <div class="mb-3">
+        <i class="bi bi-cart-x text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+      </div>
+      <h3 class="fw-bold mb-2">Your shopping cart is empty</h3>
+      <p class="text-muted small mb-4">Looks like you haven't added anything to your cart yet. Discover everyday supermarket deals!</p>
+      <a href="products.html" class="btn btn-primary-custom px-4 py-2">
+        <i class="bi bi-basket-fill me-2"></i> Browse Products
+      </a>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/ui.js"></script>
+
+  <script>
+    const CartView = {
+      async init() {
+        UI.renderNavbar('cart');
+        UI.renderFooter();
+        await this.render();
+      },
+
+      async render() {
+        const layout = document.getElementById('cart-content-layout');
+        const emptyState = document.getElementById('cart-empty-state');
+        const clearBtn = document.getElementById('btn-clear-cart');
+        const progressCard = document.getElementById('delivery-progress-card');
+        const itemsList = document.getElementById('cart-items-list');
+
+        let cart = await window.Cart?.loadCart();
+
+        // If guest cart with minimal info, fetch product details to calculate
+        if (!window.Auth?.isAuthenticated() && cart.items && cart.items.length > 0 && !cart.merchandiseSubtotal) {
+          cart = await this.buildGuestCartResponse(cart.items);
+        }
+
+        if (!cart || !cart.items || cart.items.length === 0) {
+          layout.classList.add('d-none');
+          progressCard.style.display = 'none';
+          clearBtn.style.display = 'none';
+          emptyState.classList.remove('d-none');
+          return;
+        }
+
+        emptyState.classList.add('d-none');
+        layout.classList.remove('d-none');
+        clearBtn.style.display = 'inline-block';
+        progressCard.style.display = 'block';
+
+        // Render delivery progress
+        const msgEl = document.getElementById('delivery-msg');
+        const badgeEl = document.getElementById('delivery-status-badge');
+        const barEl = document.getElementById('delivery-progress-bar');
+
+        if (cart.freeDeliveryEligible) {
+          msgEl.innerHTML = `<i class="bi bi-check-circle-fill text-success me-1"></i> Yay! You unlocked <strong>FREE Delivery</strong>!`;
+          badgeEl.className = 'badge bg-success text-white small';
+          badgeEl.textContent = 'FREE DELIVERY';
+          barEl.style.width = '100%';
+        } else {
+          msgEl.innerHTML = `Add <strong>${UI.formatCurrency(cart.amountNeededForFreeDelivery)}</strong> more for <strong>FREE Delivery</strong>! 🚚`;
+          badgeEl.className = 'badge bg-warning text-dark small';
+          badgeEl.textContent = 'STANDARD ₹35';
+          const pct = Math.min(100, (cart.merchandiseSubtotal / (cart.freeDeliveryThreshold || 299)) * 100);
+          barEl.style.width = `${pct}%`;
+        }
+
+        // Render Cart Items
+        itemsList.innerHTML = cart.items.map(item => `
+          <div class="p-3 border-bottom d-flex align-items-center gap-3">
+            <img src="${item.imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=200&q=80'}"
+                 alt="${item.productName}"
+                 style="width: 70px; height: 70px; object-fit: contain; border-radius: 10px; background: var(--bg-subtle);">
+
+            <div class="flex-grow-1">
+              <div class="text-muted small text-uppercase fw-bold" style="font-size:0.75rem;">${item.brandName || ''}</div>
+              <h6 class="fw-bold mb-1" style="font-size:0.95rem;">${item.productName}</h6>
+              <div class="text-muted small mb-2">${item.weight ? (item.weight + ' ' + (item.unit || '')) : (item.unit || '')}</div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold text-success">${UI.formatCurrency(item.effectivePrice)}</span>
+                ${item.originalPrice > item.effectivePrice ? `<span class="text-muted small text-decoration-line-through">${UI.formatCurrency(item.originalPrice)}</span>` : ''}
+              </div>
+            </div>
+
+            <!-- Quantity Controls -->
+            <div style="width: 110px;">
+              <div class="qty-control-group">
+                <button class="qty-control-btn" onclick="CartView.decrement('${item.productId}')"><i class="bi bi-dash"></i></button>
+                <span class="qty-display">${item.quantity}</span>
+                <button class="qty-control-btn" onclick="CartView.increment('${item.productId}')"><i class="bi bi-plus"></i></button>
+              </div>
+            </div>
+
+            <!-- Subtotal & Remove -->
+            <div class="text-end" style="min-width: 90px;">
+              <div class="fw-bold">${UI.formatCurrency(item.subtotal)}</div>
+              <button class="btn btn-link btn-sm text-danger p-0 mt-1 text-decoration-none" onclick="CartView.removeItem('${item.productId}')">
+                <i class="bi bi-trash3"></i> Remove
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        // Bill Summary
+        document.getElementById('bill-original-total').textContent = UI.formatCurrency(cart.originalTotal);
+        document.getElementById('bill-discount-total').textContent = `- ${UI.formatCurrency(cart.discountTotal)}`;
+        document.getElementById('bill-subtotal').textContent = UI.formatCurrency(cart.merchandiseSubtotal);
+        document.getElementById('bill-delivery-charge').textContent = cart.deliveryCharge === 0 ? 'FREE' : UI.formatCurrency(cart.deliveryCharge);
+        document.getElementById('bill-tax').textContent = UI.formatCurrency(cart.taxTotal);
+        document.getElementById('bill-final-total').textContent = UI.formatCurrency(cart.finalPayableAmount);
+      },
+
+      async buildGuestCartResponse(guestItems) {
+        let originalTotal = 0;
+        let subtotal = 0;
+        let items = [];
+
+        for (const gi of guestItems) {
+          try {
+            const p = await API.get(`/products/${gi.productId}`);
+            const itemSubtotal = p.effectivePrice * gi.quantity;
+            originalTotal += p.originalPrice * gi.quantity;
+            subtotal += itemSubtotal;
+
+            items.push({
+              productId: p.id,
+              productName: p.name,
+              brandName: p.brandName,
+              imageUrl: p.imageUrl,
+              weight: p.weight,
+              unit: p.unit,
+              originalPrice: p.originalPrice,
+              discountPrice: p.discountPrice,
+              effectivePrice: p.effectivePrice,
+              quantity: gi.quantity,
+              subtotal: itemSubtotal
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        const discountTotal = Math.max(0, originalTotal - subtotal);
+        const freeDelivery = subtotal >= 299 || items.length === 0;
+        const deliveryCharge = freeDelivery ? 0 : 35;
+        const taxTotal = subtotal * 0.05;
+        const finalPayable = subtotal + deliveryCharge + taxTotal;
+
+        return {
+          items,
+          totalItemCount: items.reduce((acc, i) => acc + i.quantity, 0),
+          originalTotal,
+          discountTotal,
+          merchandiseSubtotal: subtotal,
+          deliveryCharge,
+          taxTotal,
+          finalPayableAmount: finalPayable,
+          freeDeliveryThreshold: 299,
+          freeDeliveryEligible: freeDelivery,
+          amountNeededForFreeDelivery: freeDelivery ? 0 : Math.max(0, 299 - subtotal)
+        };
+      },
+
+      async increment(productId) {
+        const cur = window.Cart?.getItemQuantity(productId) || 0;
+        await window.Cart?.updateQuantity(productId, cur + 1);
+        await this.render();
+      },
+
+      async decrement(productId) {
+        const cur = window.Cart?.getItemQuantity(productId) || 0;
+        await window.Cart?.updateQuantity(productId, cur - 1);
+        await this.render();
+      },
+
+      async removeItem(productId) {
+        await window.Cart?.removeItem(productId);
+        await this.render();
+      },
+
+      async clearCart() {
+        if (confirm('Are you sure you want to empty your cart?')) {
+          await window.Cart?.clearCart();
+          await this.render();
+        }
+      },
+
+      proceedToCheckout() {
+        if (!window.Auth?.isAuthenticated()) {
+          UI.showToast('Please login to place your order', 'info');
+          window.location.href = `login.html?redirect=checkout.html`;
+          return;
+        }
+        window.location.href = 'checkout.html';
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => CartView.init());
+  </script>
+</body>
+</html>

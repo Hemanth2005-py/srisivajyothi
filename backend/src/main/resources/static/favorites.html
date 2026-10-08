@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Favorites & Wishlist — MYMART</title>
+  <meta name="description" content="View and manage your saved supermarket products.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Navigation Bar Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-1 small text-muted">
+            <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+          </ol>
+        </nav>
+        <h1 class="h3 fw-bold mb-0"><i class="bi bi-heart-fill text-danger me-2"></i>My Favorites</h1>
+      </div>
+      <a href="products.html" class="btn btn-outline-custom">
+        <i class="bi bi-plus-lg me-1"></i> Add More Products
+      </a>
+    </div>
+
+    <!-- Favorites Grid -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3" id="favorites-grid">
+      <!-- Skeletons -->
+      <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
+      <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
+      <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-favorites-msg" class="text-center py-5 d-none">
+      <div class="mb-3">
+        <i class="bi bi-heart text-muted" style="font-size: 4rem; opacity: 0.4;"></i>
+      </div>
+      <h4 class="fw-bold mb-2">Your wishlist is empty</h4>
+      <p class="text-muted small mb-4">Save items you love so you can easily order them whenever you want.</p>
+      <a href="products.html" class="btn btn-primary-custom px-4 py-2">
+        <i class="bi bi-basket-fill me-2"></i> Explore Supermarket
+      </a>
+    </div>
+  </main>
+
+  <!-- Dynamic Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/ui.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      UI.renderNavbar('favorites');
+      UI.renderFooter();
+      await renderFavorites();
+    });
+
+    async function renderFavorites() {
+      const grid = document.getElementById('favorites-grid');
+      const emptyMsg = document.getElementById('empty-favorites-msg');
+
+      try {
+        const res = await window.Wishlist?.loadWishlist();
+        let products = res?.products || [];
+
+        // If guest, fetch products by favoritedIds
+        if (products.length === 0 && window.Wishlist?.favoritedIds.size > 0) {
+          const ids = Array.from(window.Wishlist.favoritedIds);
+          const fetched = await Promise.all(ids.map(id => API.get(`/products/${id}`).catch(() => null)));
+          products = fetched.filter(p => p !== null);
+        }
+
+        if (products.length === 0) {
+          grid.innerHTML = '';
+          emptyMsg.classList.remove('d-none');
+        } else {
+          emptyMsg.classList.add('d-none');
+          grid.innerHTML = products.map(p => `
+            <div class="col">
+              ${UI.renderProductCard(p)}
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        grid.innerHTML = `<div class="col-12 text-danger">Failed to load favorites: ${err.message}</div>`;
+      }
+    }
+
+    window.addEventListener('wishlist-updated', () => renderFavorites());
+    window.addEventListener('cart-updated', () => {
+      document.querySelectorAll('.product-card').forEach(card => {
+        const pid = card.getAttribute('data-product-id');
+        if (pid) UI.refreshProductCardButton(pid);
+      });
+    });
+  </script>
+</body>
+</html>

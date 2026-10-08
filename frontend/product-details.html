@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — MYMART</title>
+  <meta name="description" content="View product specifications, multiple angles, pricing and add to cart.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .gallery-main-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      transition: transform 0.3s ease;
+      cursor: zoom-in;
+    }
+    .thumb-img {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: var(--bg-surface);
+      transition: all var(--transition-fast);
+    }
+    .thumb-img:hover, .thumb-img.active {
+      border-color: var(--primary);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Navigation Bar Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3 small text-muted">
+        <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+        <li class="breadcrumb-item"><a href="products.html" class="text-muted">Products</a></li>
+        <li class="breadcrumb-item active" id="breadcrumb-product-name" aria-current="page">Details</li>
+      </ol>
+    </nav>
+
+    <!-- Main Product Detail Row -->
+    <div class="row g-4 mb-5" id="product-detail-card">
+      <!-- Image Gallery Column -->
+      <div class="col-lg-5">
+        <div class="position-relative mb-3">
+          <img id="main-gallery-image" src="" alt="Product Image" class="gallery-main-img shadow-sm" onclick="ProductDetails.openZoomModal()">
+          <span class="discount-tag fs-6" id="detail-discount-tag" style="display:none;"></span>
+          <button class="wishlist-btn" id="detail-wishlist-btn" onclick="ProductDetails.toggleWishlist()" title="Add to Wishlist" style="top:14px; right:14px; width:40px; height:40px;">
+            <i class="bi bi-heart fs-5"></i>
+          </button>
+        </div>
+
+        <!-- Thumbnails Gallery -->
+        <div class="d-flex align-items-center gap-2 overflow-auto py-2" id="gallery-thumbnails">
+          <!-- Thumbnail buttons generated dynamically -->
+        </div>
+      </div>
+
+      <!-- Information & Purchase Column -->
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-muted border px-2 py-1 text-uppercase fw-bold" id="detail-brand-badge">Brand</span>
+          <span class="badge bg-light text-muted border px-2 py-1" id="detail-category-badge">Category</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" id="detail-stock-badge">
+            <i class="bi bi-check-circle-fill me-1"></i> In Stock
+          </span>
+        </div>
+
+        <h1 class="h2 fw-bold mb-2" id="detail-title">Loading Product...</h1>
+        <div class="text-muted mb-3 fs-6" id="detail-pack-size">Unit Pack Size</div>
+
+        <!-- Price Section -->
+        <div class="p-3 rounded-4 mb-4" style="background: var(--bg-subtle); border: 1px solid var(--border-color);">
+          <div class="d-flex align-items-baseline gap-3">
+            <span class="h1 fw-bold text-success mb-0" id="detail-effective-price">₹0.00</span>
+            <span class="text-muted text-decoration-line-through fs-5" id="detail-original-price"></span>
+            <span class="badge bg-success fs-6" id="detail-discount-badge" style="display:none;"></span>
+          </div>
+          <div class="text-muted small mt-1">(Inclusive of all applicable taxes)</div>
+        </div>
+
+        <!-- Quantity & Add to Cart Controls -->
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+          <div style="width: 200px;" id="detail-cart-action-box">
+            <!-- Dynamic button or [-] [qty] [+] -->
+          </div>
+
+          <button class="btn btn-outline-custom d-flex align-items-center gap-2" onclick="ProductDetails.buyNow()">
+            <i class="bi bi-lightning-fill"></i> Buy Now
+          </button>
+        </div>
+
+        <!-- Delivery & Service Guarantees -->
+        <div class="row g-2 mb-4">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--bg-surface); border:1px solid var(--border-color);">
+              <i class="bi bi-stopwatch text-success fs-3"></i>
+              <div>
+                <div class="fw-bold small">10-Minute Delivery</div>
+                <div class="text-muted" style="font-size:0.75rem;">Dispatched fresh from local store</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--bg-surface); border:1px solid var(--border-color);">
+              <i class="bi bi-shield-check text-primary fs-3"></i>
+              <div>
+                <div class="fw-bold small">Genuine & Fresh</div>
+                <div class="text-muted" style="font-size:0.75rem;">Quality inspected before packaging</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Description & Specifications -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: var(--bg-surface); border: 1px solid var(--border-color) !important;">
+          <div class="card-header bg-transparent border-bottom p-3">
+            <h5 class="fw-bold mb-0">Product Details & Specifications</h5>
+          </div>
+          <div class="card-body p-3">
+            <p class="text-muted mb-3" id="detail-description">Description loading...</p>
+            <table class="table table-sm table-borderless mb-0">
+              <tbody>
+                <tr>
+                  <td class="text-muted" style="width: 140px;">SKU Code:</td>
+                  <td class="fw-bold" id="detail-sku">-</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">Net Quantity:</td>
+                  <td class="fw-bold" id="detail-spec-unit">-</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">Storage:</td>
+                  <td>Cool, dry place. Keep sealed.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products Section -->
+    <section class="mt-5">
+      <h3 class="fw-bold mb-3 fs-5"><i class="bi bi-boxes text-success me-2"></i>Related Products in this Category</h3>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3" id="related-products-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Image Zoom Modal -->
+  <div class="modal fade" id="zoomModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 bg-transparent">
+        <div class="modal-body p-0 text-center">
+          <img id="zoom-modal-img" src="" alt="Enlarged Preview" class="img-fluid rounded-4 shadow" style="max-height: 80vh; background: #fff;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/ui.js"></script>
+
+  <script>
+    const ProductDetails = {
+      product: null,
+      activeImgIndex: 0,
+      images: [],
+
+      async init() {
+        UI.renderNavbar();
+        UI.renderFooter();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (!productId) {
+          window.location.href = 'products.html';
+          return;
+        }
+
+        try {
+          this.product = await API.get(`/products/${productId}`);
+          this.render();
+          this.loadRelatedProducts(productId);
+        } catch (err) {
+          UI.showToast(`Error: ${err.message}`, 'error');
+        }
+      },
+
+      render() {
+        const p = this.product;
+        document.title = `${p.name} — MYMART`;
+        document.getElementById('breadcrumb-product-name').textContent = p.name;
+        document.getElementById('detail-title').textContent = p.name;
+        document.getElementById('detail-brand-badge').textContent = p.brandName || 'Brand';
+        document.getElementById('detail-category-badge').textContent = p.categoryName || 'Category';
+        document.getElementById('detail-pack-size').textContent = p.weight ? `${p.weight} ${p.unit || ''}` : (p.unit || '');
+        document.getElementById('detail-effective-price').textContent = UI.formatCurrency(p.effectivePrice);
+        document.getElementById('detail-description').textContent = p.description || 'Fresh supermarket product delivered fast.';
+        document.getElementById('detail-sku').textContent = p.sku;
+        document.getElementById('detail-spec-unit').textContent = p.weight ? `${p.weight} ${p.unit || ''}` : (p.unit || '');
+
+        if (p.discountPrice && p.discountPrice < p.originalPrice) {
+          document.getElementById('detail-original-price').textContent = UI.formatCurrency(p.originalPrice);
+          const discTag = document.getElementById('detail-discount-tag');
+          const discBadge = document.getElementById('detail-discount-badge');
+          discTag.textContent = `${p.discountPercentage}% OFF`;
+          discTag.style.display = 'block';
+          discBadge.textContent = `Save ${p.discountPercentage}%`;
+          discBadge.style.display = 'inline-block';
+        }
+
+        // Stock status
+        const stockBadge = document.getElementById('detail-stock-badge');
+        if (p.inStock && p.totalStock > 0) {
+          stockBadge.className = 'badge bg-success-subtle text-success border border-success-subtle px-2 py-1';
+          stockBadge.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> In Stock (${p.totalStock} available)`;
+        } else {
+          stockBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1';
+          stockBadge.innerHTML = `<i class="bi bi-slash-circle me-1"></i> Out of Stock`;
+        }
+
+        // Image Gallery
+        this.images = p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls : [p.imageUrl];
+        if (this.images.length === 0 || !this.images[0]) {
+          this.images = ['https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80'];
+        }
+
+        this.setMainImage(0);
+
+        const thumbBox = document.getElementById('gallery-thumbnails');
+        thumbBox.innerHTML = this.images.map((img, idx) => `
+          <img src="${img}" alt="Thumbnail ${idx + 1}"
+               class="thumb-img ${idx === 0 ? 'active' : ''}"
+               onclick="ProductDetails.setMainImage(${idx})">
+        `).join('');
+
+        // Wishlist state
+        this.updateWishlistBtn();
+
+        // Cart button
+        this.renderCartButton();
+      },
+
+      setMainImage(idx) {
+        this.activeImgIndex = idx;
+        const mainImg = document.getElementById('main-gallery-image');
+        mainImg.src = this.images[idx];
+
+        document.querySelectorAll('.thumb-img').forEach((el, i) => {
+          if (i === idx) el.classList.add('active');
+          else el.classList.remove('active');
+        });
+      },
+
+      openZoomModal() {
+        const modalImg = document.getElementById('zoom-modal-img');
+        modalImg.src = this.images[this.activeImgIndex];
+        const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
+        modal.show();
+      },
+
+      async toggleWishlist() {
+        const isFav = await window.Wishlist?.toggleFavorite(this.product.id);
+        this.updateWishlistBtn();
+      },
+
+      updateWishlistBtn() {
+        const isFav = window.Wishlist?.isFavorited(this.product.id);
+        const btn = document.getElementById('detail-wishlist-btn');
+        if (btn) {
+          btn.className = `wishlist-btn ${isFav ? 'active text-danger' : ''}`;
+          btn.innerHTML = `<i class="bi ${isFav ? 'bi-heart-fill' : 'bi-heart'} fs-5"></i>`;
+        }
+      },
+
+      renderCartButton() {
+        const box = document.getElementById('detail-cart-action-box');
+        if (!box) return;
+
+        const qty = window.Cart?.getItemQuantity(this.product.id) || 0;
+        const isOutOfStock = !this.product.inStock || this.product.totalStock <= 0;
+
+        if (isOutOfStock) {
+          box.innerHTML = `<div class="out-of-stock-pill"><i class="bi bi-slash-circle me-1"></i>Out of Stock</div>`;
+        } else if (qty > 0) {
+          box.innerHTML = `
+            <div class="qty-control-group p-2">
+              <button class="qty-control-btn" onclick="ProductDetails.decrementCart()"><i class="bi bi-dash"></i></button>
+              <span class="qty-display fs-5">${qty}</span>
+              <button class="qty-control-btn" onclick="ProductDetails.incrementCart()"><i class="bi bi-plus"></i></button>
+            </div>
+          `;
+        } else {
+          box.innerHTML = `
+            <button class="btn btn-primary-custom w-100 justify-content-center py-2" onclick="ProductDetails.addToCart()">
+              <i class="bi bi-cart-plus-fill me-1"></i> Add to Cart
+            </button>
+          `;
+        }
+      },
+
+      async addToCart() {
+        await window.Cart?.addToCart(this.product.id, 1);
+        this.renderCartButton();
+      },
+
+      async incrementCart() {
+        const current = window.Cart?.getItemQuantity(this.product.id) || 0;
+        await window.Cart?.updateQuantity(this.product.id, current + 1);
+        this.renderCartButton();
+      },
+
+      async decrementCart() {
+        const current = window.Cart?.getItemQuantity(this.product.id) || 0;
+        await window.Cart?.updateQuantity(this.product.id, current - 1);
+        this.renderCartButton();
+      },
+
+      async buyNow() {
+        await this.addToCart();
+        window.location.href = 'cart.html';
+      },
+
+      async loadRelatedProducts(productId) {
+        try {
+          const related = await API.get(`/products/${productId}/related?limit=6`);
+          const box = document.getElementById('related-products-container');
+          if (related && related.length > 0) {
+            box.innerHTML = related.map(p => `
+              <div class="col">
+                ${UI.renderProductCard(p)}
+              </div>
+            `).join('');
+          } else {
+            box.innerHTML = `<div class="col-12 text-muted">No related products found.</div>`;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => ProductDetails.init());
+
+    window.addEventListener('cart-updated', () => {
+      ProductDetails.renderCartButton();
+    });
+  </script>
+</body>
+</html>

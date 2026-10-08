@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Supermarket Products — MYMART</title>
+  <meta name="description" content="Browse full grocery catalog with live search and multi-filtering.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Dynamic Navigation Bar Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="container py-4">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-1 small text-muted">
+            <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Catalog</li>
+          </ol>
+        </nav>
+        <h1 class="h3 fw-bold mb-0" id="catalog-title">Supermarket Catalog</h1>
+      </div>
+
+      <!-- Sorting & Mobile Filter Toggle -->
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-custom d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+          <i class="bi bi-funnel-fill me-1"></i> Filters
+        </button>
+
+        <div class="d-flex align-items-center gap-2">
+          <label for="sort-select" class="small text-muted text-nowrap d-none d-sm-inline">Sort by:</label>
+          <select id="sort-select" class="form-select form-select-sm" style="border-radius: 8px; width: auto;" onchange="Catalog.applySort(this.value)">
+            <option value="newest">Newest Arrivals</option>
+            <option value="popular">Most Popular</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Desktop Filters Sidebar -->
+      <aside class="col-lg-3 d-none d-lg-block">
+        <div class="filter-card sticky-top" style="top: 85px;">
+          <div class="filter-title">
+            <span><i class="bi bi-sliders me-2 text-success"></i>Filters</span>
+            <button class="btn btn-link btn-sm text-danger p-0 text-decoration-none" onclick="Catalog.resetFilters()">Reset All</button>
+          </div>
+
+          <!-- Quick Search -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold">Search Keywords</label>
+            <div class="position-relative">
+              <input type="text" id="filter-search-input" class="form-control form-control-sm" placeholder="e.g. milk, atta, chips">
+            </div>
+          </div>
+
+          <!-- Categories Filter -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold">Categories</label>
+            <div id="filter-categories-list" class="d-flex flex-column gap-2" style="max-height: 220px; overflow-y: auto;">
+              <span class="text-muted small">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Brands Filter -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold">Brands</label>
+            <div id="filter-brands-list" class="d-flex flex-column gap-2" style="max-height: 180px; overflow-y: auto;">
+              <span class="text-muted small">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Price Range -->
+          <div class="mb-4">
+            <label class="form-label small fw-bold">Price Range (₹)</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="number" id="filter-min-price" class="form-control form-control-sm" placeholder="Min" min="0">
+              <span class="text-muted">-</span>
+              <input type="number" id="filter-max-price" class="form-control form-control-sm" placeholder="Max" min="0">
+            </div>
+          </div>
+
+          <!-- Toggles -->
+          <div class="mb-4 d-flex flex-column gap-2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="filter-discount-only" onchange="Catalog.applyFilters()">
+              <label class="form-check-label small" for="filter-discount-only">Discounted Offers Only</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="filter-instock-only" onchange="Catalog.applyFilters()">
+              <label class="form-check-label small" for="filter-instock-only">In Stock Only</label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary-custom w-100 justify-content-center" onclick="Catalog.applyFilters()">
+            Apply Filters
+          </button>
+        </div>
+      </aside>
+
+      <!-- Products Grid & Pagination -->
+      <section class="col-lg-9">
+        <!-- Active Filter Tags Row -->
+        <div id="active-filters-tags" class="d-flex flex-wrap gap-2 mb-3"></div>
+
+        <!-- Products Container -->
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3" id="products-grid">
+          <!-- Skeletons -->
+          <div class="col"><div class="skeleton" style="height: 310px; border-radius: 18px;"></div></div>
+          <div class="col"><div class="skeleton" style="height: 310px; border-radius: 18px;"></div></div>
+          <div class="col"><div class="skeleton" style="height: 310px; border-radius: 18px;"></div></div>
+          <div class="col"><div class="skeleton" style="height: 310px; border-radius: 18px;"></div></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="no-products-msg" class="text-center py-5 d-none">
+          <i class="bi bi-search text-muted" style="font-size: 3.5rem;"></i>
+          <h4 class="fw-bold mt-3 mb-1">No products found</h4>
+          <p class="text-muted small mb-3">We couldn't find any products matching your current filters and keywords.</p>
+          <button class="btn btn-primary-custom" onclick="Catalog.resetFilters()">Clear Filters</button>
+        </div>
+
+        <!-- Pagination -->
+        <nav class="mt-5 d-flex justify-content-center" id="pagination-nav">
+          <ul class="pagination pagination-sm" id="pagination-list"></ul>
+        </nav>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile Offcanvas Filters -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas" style="background: var(--bg-surface); color: var(--text-main);">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title fw-bold"><i class="bi bi-sliders me-2 text-success"></i>Filters</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="mobile-filter-container">
+        <!-- Cloned or synced dynamically -->
+      </div>
+      <button class="btn btn-primary-custom w-100 justify-content-center mt-3" data-bs-dismiss="offcanvas" onclick="Catalog.applyFilters()">
+        View Products
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic Footer Placeholder -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/ui.js"></script>
+
+  <script>
+    const Catalog = {
+      currentPage: 0,
+      pageSize: 12,
+      totalPages: 1,
+      selectedCategories: new Set(),
+      selectedBrands: new Set(),
+
+      async init() {
+        UI.renderNavbar('products');
+        UI.renderFooter();
+
+        // Parse URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('query');
+        const catParam = urlParams.get('categoryId');
+        const brandParam = urlParams.get('brandId');
+        const discountParam = urlParams.get('discountOnly');
+        const sortParam = urlParams.get('sort');
+
+        if (queryParam) {
+          document.getElementById('filter-search-input').value = queryParam;
+          document.getElementById('catalog-title').textContent = `Search results for "${queryParam}"`;
+        }
+        if (catParam) this.selectedCategories.add(catParam);
+        if (brandParam) this.selectedBrands.add(brandParam);
+        if (discountParam === 'true') document.getElementById('filter-discount-only').checked = true;
+        if (sortParam) document.getElementById('sort-select').value = sortParam;
+
+        await this.loadFilterMetadata();
+        await this.fetchProducts();
+
+        // Search enter key listener
+        document.getElementById('filter-search-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.applyFilters();
+        });
+      },
+
+      async loadFilterMetadata() {
+        try {
+          const [categories, brands] = await Promise.all([
+            API.get('/categories'),
+            API.get('/brands')
+          ]);
+
+          const catListEl = document.getElementById('filter-categories-list');
+          if (categories && categories.length > 0) {
+            catListEl.innerHTML = categories.map(c => `
+              <div class="form-check">
+                <input class="form-check-input cat-check" type="checkbox" value="${c.id}" id="cat-${c.id}"
+                       ${this.selectedCategories.has(c.id) ? 'checked' : ''}
+                       onchange="Catalog.toggleCategory('${c.id}', this.checked)">
+                <label class="form-check-label small" for="cat-${c.id}">${c.name}</label>
+              </div>
+            `).join('');
+          }
+
+          const brandListEl = document.getElementById('filter-brands-list');
+          if (brands && brands.length > 0) {
+            brandListEl.innerHTML = brands.map(b => `
+              <div class="form-check">
+                <input class="form-check-input brand-check" type="checkbox" value="${b.id}" id="brand-${b.id}"
+                       ${this.selectedBrands.has(b.id) ? 'checked' : ''}
+                       onchange="Catalog.toggleBrand('${b.id}', this.checked)">
+                <label class="form-check-label small" for="brand-${b.id}">${b.name}</label>
+              </div>
+            `).join('');
+          }
+        } catch (e) {
+          console.error('Failed to load filter metadata', e);
+        }
+      },
+
+      toggleCategory(id, checked) {
+        if (checked) this.selectedCategories.add(id);
+        else this.selectedCategories.delete(id);
+      },
+
+      toggleBrand(id, checked) {
+        if (checked) this.selectedBrands.add(id);
+        else this.selectedBrands.delete(id);
+      },
+
+      applySort(sortValue) {
+        this.currentPage = 0;
+        this.fetchProducts();
+      },
+
+      applyFilters() {
+        this.currentPage = 0;
+        this.fetchProducts();
+      },
+
+      resetFilters() {
+        this.selectedCategories.clear();
+        this.selectedBrands.clear();
+        document.getElementById('filter-search-input').value = '';
+        document.getElementById('filter-min-price').value = '';
+        document.getElementById('filter-max-price').value = '';
+        document.getElementById('filter-discount-only').checked = false;
+        document.getElementById('filter-instock-only').checked = false;
+        document.getElementById('sort-select').value = 'newest';
+        document.querySelectorAll('.cat-check, .brand-check').forEach(cb => cb.checked = false);
+
+        document.getElementById('catalog-title').textContent = 'Supermarket Catalog';
+        this.currentPage = 0;
+        this.fetchProducts();
+      },
+
+      async fetchProducts() {
+        const query = document.getElementById('filter-search-input').value.trim();
+        const minPrice = document.getElementById('filter-min-price').value;
+        const maxPrice = document.getElementById('filter-max-price').value;
+        const discountOnly = document.getElementById('filter-discount-only').checked;
+        const inStockOnly = document.getElementById('filter-instock-only').checked;
+        const sort = document.getElementById('sort-select').value;
+
+        let categoryId = Array.from(this.selectedCategories)[0] || '';
+        let brandId = Array.from(this.selectedBrands)[0] || '';
+
+        const params = new URLSearchParams({
+          page: this.currentPage,
+          size: this.pageSize,
+          sort
+        });
+
+        if (query) params.append('query', query);
+        if (categoryId) params.append('categoryId', categoryId);
+        if (brandId) params.append('brandId', brandId);
+        if (minPrice) params.append('minPrice', minPrice);
+        if (maxPrice) params.append('maxPrice', maxPrice);
+        if (discountOnly) params.append('discountOnly', 'true');
+        if (inStockOnly) params.append('inStockOnly', 'true');
+
+        const grid = document.getElementById('products-grid');
+        const emptyMsg = document.getElementById('no-products-msg');
+        grid.innerHTML = Array(8).fill('<div class="col"><div class="skeleton" style="height: 310px; border-radius: 18px;"></div></div>').join('');
+        emptyMsg.classList.add('d-none');
+
+        try {
+          const res = await API.get(`/products?${params.toString()}`);
+          const products = res.content || [];
+          this.totalPages = res.totalPages || 1;
+
+          if (products.length === 0) {
+            grid.innerHTML = '';
+            emptyMsg.classList.remove('d-none');
+          } else {
+            grid.innerHTML = products.map(p => `
+              <div class="col">
+                ${UI.renderProductCard(p)}
+              </div>
+            `).join('');
+          }
+
+          this.renderPagination();
+        } catch (err) {
+          grid.innerHTML = `<div class="col-12 text-danger">Error loading products: ${err.message}</div>`;
+        }
+      },
+
+      renderPagination() {
+        const nav = document.getElementById('pagination-list');
+        if (this.totalPages <= 1) {
+          nav.innerHTML = '';
+          return;
+        }
+
+        let html = `
+          <li class="page-item ${this.currentPage === 0 ? 'disabled' : ''}">
+            <button class="page-link" onclick="Catalog.goToPage(${this.currentPage - 1})">Previous</button>
+          </li>
+        `;
+
+        for (let i = 0; i < this.totalPages; i++) {
+          html += `
+            <li class="page-item ${this.currentPage === i ? 'active' : ''}">
+              <button class="page-link" onclick="Catalog.goToPage(${i})">${i + 1}</button>
+            </li>
+          `;
+        }
+
+        html += `
+          <li class="page-item ${this.currentPage >= this.totalPages - 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="Catalog.goToPage(${this.currentPage + 1})">Next</button>
+          </li>
+        `;
+
+        nav.innerHTML = html;
+      },
+
+      goToPage(page) {
+        if (page < 0 || page >= this.totalPages) return;
+        this.currentPage = page;
+        this.fetchProducts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => Catalog.init());
+
+    window.addEventListener('cart-updated', () => {
+      document.querySelectorAll('.product-card').forEach(card => {
+        const pid = card.getAttribute('data-product-id');
+        if (pid) UI.refreshProductCardButton(pid);
+      });
+    });
+  </script>
+</body>
+</html>
