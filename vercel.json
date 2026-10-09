@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://YOUR-BACKEND-APP-NAME.onrender.com/api/:match*"
+      "destination": "https://rajesh-mymart.vercel.app/api/:match*"
     }
   ]
 }
