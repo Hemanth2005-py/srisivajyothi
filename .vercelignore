@@ -1,0 +1,9 @@
+backend/
+target/
+*.jar
+*.war
+node_modules/
+.git/
+.vscode/
+Dockerfile
+render.yaml
