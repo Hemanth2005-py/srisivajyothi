@@ -23,7 +23,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
-    private final InventoryRepository inventoryRepository;
     private final InventoryService inventoryService;
     private final OrderRepository orderRepository;
 

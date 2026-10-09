@@ -1,0 +1,10 @@
+{
+  "outputDirectory": "frontend",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "https://YOUR-BACKEND-APP-NAME.onrender.com/api/:match*"
+    }
+  ]
+}

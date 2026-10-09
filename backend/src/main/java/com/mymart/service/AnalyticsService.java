@@ -25,7 +25,6 @@ public class AnalyticsService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-    private final BrandRepository brandRepository;
     private final InventoryService inventoryService;
     private final OrderService orderService;
 
