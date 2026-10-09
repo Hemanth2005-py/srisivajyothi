@@ -76,7 +76,7 @@ mvn clean package -DskipTests
 java -jar target/mymart-backend-1.0.0.jar
 ```
 
-The database initializes automatically on startup with demo products, brands, categories, dual inventory records, and 35 historical orders across the past 6 months.
+
 
 ---
 
@@ -91,7 +91,7 @@ Once the server is running on `http://localhost:8080`:
 | **Shopping Cart** | [`http://localhost:8080/cart.html`](http://localhost:8080/cart.html) | Live cart items, +/- controls, free delivery progress bar |
 | **Checkout** | [`http://localhost:8080/checkout.html`](http://localhost:8080/checkout.html) | Address details, order placement with COD |
 | **Order History** | [`http://localhost:8080/order-history.html`](http://localhost:8080/order-history.html) | Order tracking & one-click printable PDF tax invoices |
-| **Admin Login** | [`http://localhost:8080/admin-login.html`](http://localhost:8080/admin-login.html) | Admin portal authentication with 1-click demo button |
+| **Admin Login** | [`http://localhost:8080/admin-login.html`](http://localhost:8080/admin-login.html) | Secure admin portal authentication |
 | **Admin Dashboard** | [`http://localhost:8080/admin-dashboard.html`](http://localhost:8080/admin-dashboard.html) | KPIs, monthly revenue chart, category breakdown chart |
 | **Admin Inventory** | [`http://localhost:8080/admin-inventory.html`](http://localhost:8080/admin-inventory.html) | **Main** vs **store** stock control, transfers, adjustments |
 | **Admin Products** | [`http://localhost:8080/admin-products.html`](http://localhost:8080/admin-products.html) | Product catalog management (create, edit, delete) |

@@ -24,71 +24,6 @@
   <div id="navbar-placeholder"></div>
 
   <main class="container py-4">
-    <!-- Promotional Hero Banners / Carousel -->
-    <div id="heroCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
-      </div>
-      <div class="carousel-inner rounded-4 shadow-sm overflow-hidden">
-        <!-- Slide 1 -->
-        <div class="carousel-item active" data-bs-interval="4000">
-          <div class="promo-banner d-flex align-items-center justify-content-between p-4 p-md-5" style="background: linear-gradient(135deg, #0c831f 0%, #16a34a 100%); min-height: 240px;">
-            <div style="max-width: 520px;">
-              <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-2 rounded-pill"><i class="bi bi-clock-fill me-1"></i> 10 MINUTE DELIVERY</span>
-              <h1 class="display-6 fw-bold mb-2">Supermarket Freshness at Your Doorstep</h1>
-              <p class="lead mb-4 text-white-50 fs-6">Stock up on farm fresh veggies, dairy, pulses, and pantry essentials with instant fulfillment.</p>
-              <a href="products.html" class="btn btn-warning fw-bold px-4 py-2 rounded-pill text-dark shadow-sm">
-                Shop Now <i class="bi bi-arrow-right ms-1"></i>
-              </a>
-            </div>
-            <div class="d-none d-lg-block">
-              <i class="bi bi-basket-fill" style="font-size: 10rem; opacity: 0.2; color: #fff;"></i>
-            </div>
-          </div>
-        </div>
-        <!-- Slide 2 -->
-        <div class="carousel-item" data-bs-interval="4000">
-          <div class="promo-banner d-flex align-items-center justify-content-between p-4 p-md-5" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); min-height: 240px;">
-            <div style="max-width: 520px;">
-              <span class="badge bg-light text-primary fw-bold px-3 py-2 mb-2 rounded-pill"><i class="bi bi-percent me-1"></i> MEGA SUPERMARKET SAVINGS</span>
-              <h2 class="display-6 fw-bold mb-2">Up to 30% Off Daily Staples</h2>
-              <p class="lead mb-4 text-white-50 fs-6">Aashirvaad Atta, Fortune Oil, Tata Pulses, and Amul Butter at lowest supermarket prices.</p>
-              <a href="products.html?discountOnly=true" class="btn btn-light fw-bold px-4 py-2 rounded-pill text-primary shadow-sm">
-                Explore Deals <i class="bi bi-arrow-right ms-1"></i>
-              </a>
-            </div>
-            <div class="d-none d-lg-block">
-              <i class="bi bi-tags-fill" style="font-size: 10rem; opacity: 0.2; color: #fff;"></i>
-            </div>
-          </div>
-        </div>
-        <!-- Slide 3 -->
-        <div class="carousel-item" data-bs-interval="4000">
-          <div class="promo-banner d-flex align-items-center justify-content-between p-4 p-md-5" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); min-height: 240px;">
-            <div style="max-width: 520px;">
-              <span class="badge bg-warning text-dark fw-bold px-3 py-2 mb-2 rounded-pill"><i class="bi bi-truck me-1"></i> FREE DELIVERY</span>
-              <h2 class="display-6 fw-bold mb-2">Orders Above ₹299 Ship FREE</h2>
-              <p class="lead mb-4 text-white-50 fs-6">No delivery charges. Freshly handpicked from Main & store fulfillment centers.</p>
-              <a href="products.html" class="btn btn-warning fw-bold px-4 py-2 rounded-pill text-dark shadow-sm">
-                Start Shopping <i class="bi bi-arrow-right ms-1"></i>
-              </a>
-            </div>
-            <div class="d-none d-lg-block">
-              <i class="bi bi-truck" style="font-size: 10rem; opacity: 0.2; color: #fff;"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
-    </div>
-
     <!-- Shop by Category Section -->
     <section class="mb-5">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -141,20 +76,6 @@
         <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
         <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
         <div class="col"><div class="skeleton" style="height: 290px; border-radius: 18px;"></div></div>
-      </div>
-    </section>
-
-    <!-- Popular Supermarket Brands -->
-    <section class="mb-5">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold mb-0 fs-5"><i class="bi bi-patch-check-fill text-primary me-2"></i>Popular Brands</h3>
-        <span class="text-muted small">100% genuine guaranteed</span>
-      </div>
-      <div class="d-flex flex-wrap gap-2" id="brands-container">
-        <!-- Skeleton badges -->
-        <div class="skeleton" style="width: 100px; height: 38px; border-radius: 20px;"></div>
-        <div class="skeleton" style="width: 100px; height: 38px; border-radius: 20px;"></div>
-        <div class="skeleton" style="width: 100px; height: 38px; border-radius: 20px;"></div>
       </div>
     </section>
   </main>
@@ -231,21 +152,6 @@
         }
       } catch (e) {
         console.error('Failed to load featured products', e);
-      }
-
-      // Load Brands
-      try {
-        const brands = await API.get('/brands');
-        const brandBox = document.getElementById('brands-container');
-        if (brands && brands.length > 0) {
-          brandBox.innerHTML = brands.map(b => `
-            <a href="products.html?brandId=${b.id}" class="btn btn-outline-custom rounded-pill px-3 py-1 small">
-              ${b.name}
-            </a>
-          `).join('');
-        }
-      } catch (e) {
-        console.error('Failed to load brands', e);
       }
     });
 

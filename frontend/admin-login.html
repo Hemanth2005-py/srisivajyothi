@@ -37,7 +37,7 @@
           <label class="form-label small fw-bold text-light">Admin Email or Username</label>
           <div class="input-group">
             <span class="input-group-text border-0" style="background: #0f172a; color: #94a3b8;"><i class="bi bi-person-fill"></i></span>
-            <input type="text" id="admin-user" class="form-control border-0" style="background: #0f172a; color: #fff;" required placeholder="srisivajyothi@ssj">
+            <input type="text" id="admin-user" class="form-control border-0" style="background: #0f172a; color: #fff;" required placeholder="Enter admin email or username">
           </div>
         </div>
 
@@ -53,19 +53,6 @@
           <i class="bi bi-unlock-fill me-2"></i> Enter Admin Dashboard
         </button>
       </form>
-
-      <!-- 1-Click Demo Admin Button -->
-      <div class="p-3 rounded-3 mt-2" style="background: rgba(2, 132, 199, 0.1); border: 1px dashed #0284c7;">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <strong class="small d-block text-info"><i class="bi bi-key me-1"></i> Instant Demo Admin</strong>
-            <span class="text-secondary" style="font-size: 0.75rem;">srisivajyothi@ssj / SSJ@SSJ</span>
-          </div>
-          <button class="btn btn-sm btn-info text-dark fw-bold" onclick="AdminLogin.fillDemoAdmin()">
-            1-Click Login
-          </button>
-        </div>
-      </div>
     </div>
 
     <div class="text-center mt-4 small text-secondary">
@@ -107,12 +94,6 @@
           btn.disabled = false;
           btn.innerHTML = `<i class="bi bi-unlock-fill me-2"></i> Enter Admin Dashboard`;
         }
-      },
-
-      fillDemoAdmin() {
-        document.getElementById('admin-user').value = 'srisivajyothi@ssj';
-        document.getElementById('admin-pass').value = 'SSJ@SSJ';
-        document.getElementById('admin-login-form').dispatchEvent(new Event('submit'));
       }
     };
   </script>

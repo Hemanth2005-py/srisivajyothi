@@ -39,12 +39,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             seedCatalog();
         }
 
-        // 3. Seed sample past 6-month orders if none exist
-        if (orderRepository.count() == 0) {
-            log.info("Seeding historical 6-month orders for analytics...");
-            seedHistoricalOrders();
-        }
-
         log.info("Database verification and initialization completed successfully.");
     }
 
@@ -272,95 +266,5 @@ public class DatabaseInitializer implements CommandLineRunner {
             inventoryService.initInventoryForProduct(saved.getId(), sku, mainStock, storeStock);
             log.info("Initialized product {} with Main: {} units, store: {} units", name, mainStock, storeStock);
         }
-    }
-
-    private void seedHistoricalOrders() {
-        User customer = userRepository.findByEmailIgnoreCase("customer@mymart.com").orElse(null);
-        if (customer == null) return;
-
-        List<Product> products = productRepository.findAll();
-        if (products.isEmpty()) return;
-
-        Random random = new Random(42);
-        Instant now = Instant.now();
-
-        // Generate 35 realistic orders across the past 6 months (180 days)
-        for (int i = 0; i < 35; i++) {
-            int daysAgo = random.nextInt(170) + 1;
-            Instant orderDate = now.minus(daysAgo, ChronoUnit.DAYS).plusSeconds(random.nextInt(3600 * 12));
-
-            DateTimeFormatter orderFmt = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("Asia/Kolkata"));
-            String orderNumber = "MM-" + orderFmt.format(orderDate) + String.format("-%04d", i + 1001);
-
-            int itemCount = random.nextInt(3) + 1;
-            List<Order.OrderItem> orderItems = new ArrayList<>();
-            double origTotal = 0.0;
-            double discSubtotal = 0.0;
-
-            for (int j = 0; j < itemCount; j++) {
-                Product p = products.get(random.nextInt(products.size()));
-                int qty = random.nextInt(2) + 1;
-                double oPrice = p.getOriginalPrice();
-                double effPrice = p.getEffectivePrice();
-                double sub = effPrice * qty;
-
-                origTotal += oPrice * qty;
-                discSubtotal += sub;
-
-                orderItems.add(Order.OrderItem.builder()
-                        .productId(p.getId())
-                        .productName(p.getName())
-                        .sku(p.getSku())
-                        .brandName("Brand")
-                        .unit(p.getWeight() + " " + p.getUnit())
-                        .imageUrl(p.getImageUrl())
-                        .quantity(qty)
-                        .originalUnitPrice(oPrice)
-                        .discountUnitPrice(effPrice)
-                        .subtotal(sub)
-                        .build());
-            }
-
-            double discTotal = Math.max(0.0, origTotal - discSubtotal);
-            double delFee = discSubtotal >= 299 ? 0.0 : 35.0;
-            double tax = discSubtotal * 0.05;
-            double finalTotal = discSubtotal + delFee + tax;
-
-            String status = daysAgo > 3 ? "DELIVERED" : (daysAgo > 1 ? "OUT_FOR_DELIVERY" : "PENDING");
-            String payStatus = "DELIVERED".equals(status) ? "PAID" : "PENDING";
-
-            Order order = Order.builder()
-                    .orderNumber(orderNumber)
-                    .userId(customer.getId())
-                    .customerSnapshot(Order.CustomerSnapshot.builder()
-                            .name(customer.getFullName())
-                            .email(customer.getEmail())
-                            .phone(customer.getPhone())
-                            .build())
-                    .deliveryAddress(Order.DeliveryAddress.builder()
-                            .street("Flat 402, Green Glen Layout, Bellandur")
-                            .city("Bengaluru")
-                            .state("Karnataka")
-                            .pincode("560103")
-                            .landmark("Near Central Mall")
-                            .deliveryInstructions("Leave at door with security")
-                            .build())
-                    .items(orderItems)
-                    .originalTotal(Math.round(origTotal * 100.0) / 100.0)
-                    .discountTotal(Math.round(discTotal * 100.0) / 100.0)
-                    .deliveryCharge(delFee)
-                    .taxTotal(Math.round(tax * 100.0) / 100.0)
-                    .finalTotal(Math.round(finalTotal * 100.0) / 100.0)
-                    .paymentMethod("CASH_ON_DELIVERY")
-                    .paymentStatus(payStatus)
-                    .orderStatus(status)
-                    .createdAt(orderDate)
-                    .updatedAt(orderDate)
-                    .build();
-
-            orderRepository.save(order);
-        }
-
-        log.info("Successfully seeded 35 historical orders across the last 6 months for analytics testing.");
     }
 }

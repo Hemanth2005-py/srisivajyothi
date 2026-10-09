@@ -85,7 +85,7 @@
           <div>
             <div class="kpi-label">Total Revenue</div>
             <div class="kpi-value text-success" id="kpi-total-sales">₹0.00</div>
-            <small class="text-muted"><i class="bi bi-arrow-up-right text-success me-1"></i>+12.5% vs previous period</small>
+            <small class="text-muted" id="kpi-sales-growth">No orders yet</small>
           </div>
           <div class="kpi-icon bg-success-subtle text-success"><i class="bi bi-currency-rupee"></i></div>
         </div>
@@ -223,6 +223,16 @@
           document.getElementById('kpi-low-stock').textContent = data.lowStockProducts;
           document.getElementById('kpi-out-stock').textContent = data.outOfStockProducts;
 
+          // Render sales growth
+          const growthEl = document.getElementById('kpi-sales-growth');
+          if (growthEl) {
+            if (data.totalOrders > 0 && data.salesGrowthPercentage > 0) {
+              growthEl.innerHTML = `<i class="bi bi-arrow-up-right text-success me-1"></i>+${data.salesGrowthPercentage}% vs previous period`;
+            } else {
+              growthEl.innerHTML = `<span class="text-muted">No orders yet</span>`;
+            }
+          }
+
           // Render recent orders
           const tbody = document.getElementById('recent-orders-tbody');
           if (data.recentOrders && data.recentOrders.length > 0) {
@@ -240,7 +250,7 @@
               </tr>
             `).join('');
           } else {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">No recent orders found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="bi bi-inbox fs-4 d-block mb-1 opacity-50"></i>No recent orders found.</td></tr>`;
           }
         } catch (err) {
           console.error('Failed to load KPIs:', err);
@@ -297,8 +307,10 @@
 
           if (this.categoryChartInstance) this.categoryChartInstance.destroy();
 
-          const labels = catData.map(c => c.categoryName);
-          const values = catData.map(c => c.salesAmount);
+          const activeCategories = (catData || []).filter(c => c.salesAmount > 0);
+          const labels = activeCategories.length > 0 ? activeCategories.map(c => c.categoryName) : ['No Orders Yet'];
+          const values = activeCategories.length > 0 ? activeCategories.map(c => c.salesAmount) : [1];
+          const colors = activeCategories.length > 0 ? ['#0c831f', '#0284c7', '#f8cb00', '#ec4899', '#8b5cf6'] : ['rgba(148, 163, 184, 0.25)'];
 
           this.categoryChartInstance = new Chart(ctx, {
             type: 'doughnut',
@@ -306,14 +318,17 @@
               labels: labels.slice(0, 5),
               datasets: [{
                 data: values.slice(0, 5),
-                backgroundColor: ['#0c831f', '#0284c7', '#f8cb00', '#ec4899', '#8b5cf6']
+                backgroundColor: colors
               }]
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
               plugins: {
-                legend: { position: 'bottom' }
+                legend: { position: 'bottom' },
+                tooltip: {
+                  enabled: activeCategories.length > 0
+                }
               }
             }
           });

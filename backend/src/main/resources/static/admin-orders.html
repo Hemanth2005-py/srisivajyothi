@@ -57,14 +57,19 @@
         <small class="text-muted">Review incoming grocery orders, dispatch shipments, and generate bills</small>
       </div>
 
-      <!-- Status Filter Tabs -->
-      <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-outline-secondary active" onclick="AdminOrders.setStatusFilter('ALL', this)">All</button>
-        <button type="button" class="btn btn-outline-warning" onclick="AdminOrders.setStatusFilter('PENDING', this)">Pending</button>
-        <button type="button" class="btn btn-outline-info" onclick="AdminOrders.setStatusFilter('PROCESSING', this)">Processing</button>
-        <button type="button" class="btn btn-outline-primary" onclick="AdminOrders.setStatusFilter('OUT_FOR_DELIVERY', this)">Out for Delivery</button>
-        <button type="button" class="btn btn-outline-success" onclick="AdminOrders.setStatusFilter('DELIVERED', this)">Delivered</button>
-        <button type="button" class="btn btn-outline-danger" onclick="AdminOrders.setStatusFilter('CANCELLED', this)">Cancelled</button>
+      <!-- Status Filter Tabs & Action Buttons -->
+      <div class="d-flex align-items-center gap-2">
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-outline-secondary active" onclick="AdminOrders.setStatusFilter('ALL', this)">All</button>
+          <button type="button" class="btn btn-outline-warning" onclick="AdminOrders.setStatusFilter('PENDING', this)">Pending</button>
+          <button type="button" class="btn btn-outline-info" onclick="AdminOrders.setStatusFilter('PROCESSING', this)">Processing</button>
+          <button type="button" class="btn btn-outline-primary" onclick="AdminOrders.setStatusFilter('OUT_FOR_DELIVERY', this)">Out for Delivery</button>
+          <button type="button" class="btn btn-outline-success" onclick="AdminOrders.setStatusFilter('DELIVERED', this)">Delivered</button>
+          <button type="button" class="btn btn-outline-danger" onclick="AdminOrders.setStatusFilter('CANCELLED', this)">Cancelled</button>
+        </div>
+        <button class="btn btn-outline-danger btn-sm" onclick="AdminOrders.clearAllOrders()" title="Clear all orders">
+          <i class="bi bi-trash3 me-1"></i> Clear Orders
+        </button>
       </div>
     </div>
 
@@ -160,7 +165,11 @@
           const tbody = document.getElementById('admin-orders-tbody');
 
           if (this.orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">No orders found for status ${this.statusFilter}.</td></tr>`;
+            const emptyMsg = this.statusFilter === 'ALL' ? 'No customer orders found.' : `No orders found for status ${this.statusFilter}.`;
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
+              ${emptyMsg}
+            </td></tr>`;
             return;
           }
 
@@ -193,6 +202,9 @@
                     </button>
                     <button class="btn btn-sm btn-outline-success" onclick="AdminOrders.downloadBill('${o.orderNumber}')" title="Download PDF Invoice">
                       <i class="bi bi-file-earmark-pdf"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="AdminOrders.deleteOrder('${o.orderNumber}')" title="Delete Order">
+                      <i class="bi bi-trash"></i>
                     </button>
                   </div>
                 </td>
@@ -231,6 +243,28 @@
         API.download(`/admin/orders/${orderNumber}/bill`, `${orderNumber}-invoice.pdf`)
           .then(() => UI.showToast('Invoice downloaded', 'success'))
           .catch(err => UI.showToast(`Download failed: ${err.message}`, 'error'));
+      },
+
+      async deleteOrder(orderNumber) {
+        if (!confirm(`Are you sure you want to permanently delete order ${orderNumber}?`)) return;
+        try {
+          await API.delete(`/admin/orders/${orderNumber}`);
+          UI.showToast(`Order ${orderNumber} deleted successfully.`, 'success');
+          await this.loadOrders();
+        } catch (err) {
+          UI.showToast(err.message, 'error');
+        }
+      },
+
+      async clearAllOrders() {
+        if (!confirm('Are you sure you want to permanently delete ALL customer orders? This will reset all order and analytics data.')) return;
+        try {
+          await API.delete('/admin/orders');
+          UI.showToast('All customer orders cleared successfully.', 'success');
+          await this.loadOrders();
+        } catch (err) {
+          UI.showToast(err.message, 'error');
+        }
       }
     };
 

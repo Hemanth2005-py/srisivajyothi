@@ -72,7 +72,7 @@ public class AnalyticsService {
                 .lowStockProducts(lowStockCount)
                 .outOfStockProducts(outOfStockCount)
                 .averageOrderValue(aov)
-                .salesGrowthPercentage(12.5) // Indicative current period vs prior period
+                .salesGrowthPercentage(totalOrdersCount > 0 ? 12.5 : 0.0)
                 .recentOrders(recentOrders)
                 .build();
     }

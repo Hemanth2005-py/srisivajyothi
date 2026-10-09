@@ -73,7 +73,7 @@ const UI = {
     nav.className = 'navbar-custom';
     nav.innerHTML = `
       <div class="container-fluid d-flex align-items-center justify-content-between gap-3">
-        <!-- Logo & Location -->
+        <!-- Logo -->
         <div class="d-flex align-items-center gap-3">
           <a href="index.html" class="brand-logo">
             <span style="display:inline-flex; width:34px; height:34px; border-radius:10px; background:#0c831f; color:#fff; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 4px 10px rgba(12,131,31,0.3);">
@@ -82,15 +82,6 @@ const UI = {
             <span>MYMART</span>
             <span class="brand-badge">Supermarket</span>
           </a>
-
-          <div class="location-selector d-none d-md-flex" onclick="UI.openLocationModal()">
-            <i class="bi bi-geo-alt-fill text-success fs-5"></i>
-            <div>
-              <span class="loc-title" id="nav-location-title">Delivery in 10 Mins</span>
-              <span class="loc-sub" id="nav-location-sub">Indiranagar, Bengaluru</span>
-            </div>
-            <i class="bi bi-chevron-down ms-1 text-muted" style="font-size: 0.75rem;"></i>
-          </div>
         </div>
 
         <!-- Live Search -->

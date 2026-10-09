@@ -297,6 +297,20 @@ public class OrderService {
                 .build();
     }
 
+    @Transactional
+    public void deleteOrder(String orderNumber) {
+        Order order = getOrderEntityByNumber(orderNumber);
+        orderRepository.delete(order);
+        log.info("Admin deleted order: {}", orderNumber);
+    }
+
+    @Transactional
+    public void clearAllOrders() {
+        long count = orderRepository.count();
+        orderRepository.deleteAll();
+        log.info("Admin cleared all {} orders from database", count);
+    }
+
     private double round(double val) {
         return BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }

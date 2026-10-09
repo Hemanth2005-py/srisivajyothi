@@ -62,4 +62,18 @@ public class AdminOrderController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }
+
+    @DeleteMapping("/{orderNumber}")
+    @Operation(summary = "Delete an individual customer order")
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable String orderNumber) {
+        orderService.deleteOrder(orderNumber);
+        return ResponseEntity.ok(ApiResponse.ok("Order " + orderNumber + " deleted successfully", null));
+    }
+
+    @DeleteMapping
+    @Operation(summary = "Clear all customer orders from the platform")
+    public ResponseEntity<ApiResponse<Void>> clearAllOrders() {
+        orderService.clearAllOrders();
+        return ResponseEntity.ok(ApiResponse.ok("All customer orders cleared successfully", null));
+    }
 }
